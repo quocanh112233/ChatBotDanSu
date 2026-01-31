@@ -1,0 +1,23 @@
+# Virtual environment
+venv/
+
+# Python environment
+__pycache__
+*.pyc
+
+# IDE settings
+.idea
+.vscode
+
+# Environment variables
+.env
+
+# Database data (Docker volume)
+postgres_data/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

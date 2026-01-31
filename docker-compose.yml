@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: chatbot_db
+    ports:
+      - "5433:5432" # Map port 5433 (Host) to 5432 (Container) để tránh xung đột với Postgres local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123Az#
+      POSTGRES_DB: chatbotdansu
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: chatbot_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Override DB connection for Docker network
+      DATABASE_URL: postgresql+asyncpg://postgres:123Az%23@db:5432/chatbotdansu
+      # Connect to Ollama on Host machine
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      # Security Hash (Pass from .env or hardcode if needed, better to pass though)
+      DATA_INTEGRITY_HASH: ${DATA_INTEGRITY_HASH:-729b4783305106e2361de4259b3af5d8cb962c5b7cb85732dc8053966f3ac29d}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Mount source code for development (Hot Reload)
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    container_name: chatbot_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
