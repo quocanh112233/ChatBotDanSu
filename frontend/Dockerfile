@@ -29,6 +29,11 @@ RUN echo 'server { \
     root /usr/share/nginx/html; \
     index index.html index.htm; \
     try_files $uri $uri/ /index.html; \
+    \
+    # Security Headers \
+    add_header X-Frame-Options "SAMEORIGIN" always; \
+    add_header X-Content-Type-Options "nosniff" always; \
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always; \
     } \
     }' > /etc/nginx/conf.d/default.conf
 

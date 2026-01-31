@@ -7,54 +7,29 @@ const axiosClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // QUAN TRỌNG: Để gửi/nhận Cookie HttpOnly
 });
 
-// Interceptor: Gắn token vào header của mọi request
-axiosClient.interceptors.request.use(
-    (config) => {
-        const token = useAuthStore.getState().accessToken;
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
-
-// Interceptor: Xử lý lỗi 401 (Token hết hạn) => Refresh Token
+// Interceptor: Xử lý lỗi 401 (Token hết hạn) => Refresh Token TỰ ĐỘNG bằng Cookie
 axiosClient.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        // Nếu lỗi 401 và chưa retry lần nào
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const refreshToken = useAuthStore.getState().refreshToken;
 
-            if (refreshToken) {
-                try {
-                    // Gọi API refresh token
-                    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
-                        refresh_token: refreshToken
-                    });
+            try {
+                // Gọi Refresh Token (Backend tự đọc Cookie Refresh)
+                await axiosClient.post('/auth/refresh');
 
-                    // Cập nhật token mới vào store
-                    useAuthStore.getState().updateAccessToken(data.access_token);
-
-                    // Gắn token mới vào request cũ và gọi lại
-                    originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
-                    return axiosClient(originalRequest);
-                } catch (refreshError) {
-                    // Nếu refresh fail thì logout luôn
-                    useAuthStore.getState().logout();
-                    window.location.href = '/login';
-                    return Promise.reject(refreshError);
-                }
-            } else {
-                // Không có refresh token -> Logout
+                // Retry request ban đầu (Cookie mới đã được browser tự động lưu)
+                return axiosClient(originalRequest);
+            } catch (refreshError) {
+                // Refresh fail -> Logout
                 useAuthStore.getState().logout();
                 window.location.href = '/login';
+                return Promise.reject(refreshError);
             }
         }
         return Promise.reject(error);

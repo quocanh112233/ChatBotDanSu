@@ -12,12 +12,12 @@ const LoginPage: React.FC = () => {
     const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
         try {
             if (credentialResponse.credential) {
-                console.log("Google Credential:", credentialResponse.credential);
+                // Remove console.log for security
                 const { data } = await authApi.loginGoogle(credentialResponse.credential);
-                console.log("Login Success:", data);
 
-                // Lưu thông tin vào store
-                login(data.user, data.access_token, data.refresh_token);
+                // Lưu thông tin vào store (Token đã được lưu trong Cookie HttpOnly)
+                // API trả về trực tiếp User object, không còn wrapper {user, access_token...} nữa
+                login(data);
 
                 // Chuyển hướng
                 navigate('/');

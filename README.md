@@ -54,8 +54,8 @@ docker-compose up --build
 Lần đầu chạy sẽ mất vài phút để build image.
 
 Sau khi chạy xong, truy cập các địa chỉ sau:
-- **Frontend (Web App):** http://localhost:5173
-- **Backend (API Docs):** http://localhost:3000/docs
+- **Frontend (Web App):** http://localhost:3000
+- **Backend (API Docs):** http://localhost:8000/docs
 - **Database (Postgres):** Port 5433
 
 ---

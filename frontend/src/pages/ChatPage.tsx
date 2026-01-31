@@ -81,7 +81,7 @@ const ChatPage: React.FC = () => {
             // Assuming default vite proxy or full url.
             const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
-            const response = await fetch(`${baseURL}/chat`, {
+            const response = await fetch(`${baseURL}/chat/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

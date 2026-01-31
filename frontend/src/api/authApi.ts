@@ -5,7 +5,7 @@ export const authApi = {
         return axiosClient.post('/auth/login/google', { credential });
     },
 
-    logout: (refreshToken: string) => {
-        return axiosClient.post('/auth/logout', { refresh_token: refreshToken });
+    logout: () => {
+        return axiosClient.post('/auth/logout');
     }
 };
