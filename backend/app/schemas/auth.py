@@ -9,7 +9,7 @@ class GoogleLoginPayload(BaseModel):
     credential: str # Google ID Token
 
 # Schema thông tin User trả về
-class UserResponse(BaseModel):
+class User(BaseModel):
     id: UUID
     email: EmailStr
     full_name: Optional[str] = None
@@ -24,7 +24,7 @@ class Token(BaseModel):
     token_type: str = "bearer"
     refresh_token: str
     expires_in: int # seconds
-    user: UserResponse
+    user: User
 
 # Schema Refresh Token Request
 class RefreshTokenRequest(BaseModel):

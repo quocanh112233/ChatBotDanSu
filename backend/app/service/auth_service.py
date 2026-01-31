@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete
 from app.models.user import User, Session
-from app.schemas.auth import UserResponse, Token
+from app.schemas.auth import User as UserSchema, Token
 from app.core.security import create_access_token, create_refresh_token, verify_token_data
 from app.core.config import get_settings
 from fastapi import HTTPException, status
@@ -86,7 +86,7 @@ class AuthService:
             access_token=access_token,
             refresh_token=refresh_token,
             expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-            user=UserResponse.model_validate(user)
+            user=UserSchema.model_validate(user)
         )
 
     async def login_with_google(self, token: str, user_agent: str = None) -> tuple[Token, User]:
@@ -129,7 +129,7 @@ class AuthService:
             access_token=new_access_token,
             refresh_token=refresh_token, # Keep old refresh token or rotate? Giữ nguyên cho đơn giản
             expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-            user=UserResponse.model_validate(user)
+            user=UserSchema.model_validate(user)
         )
 
     async def logout(self, refresh_token: str):
