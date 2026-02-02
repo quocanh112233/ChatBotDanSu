@@ -2,7 +2,6 @@
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import delete
 from app.models.user import User, Session
 from app.schemas.auth import User as UserSchema, Token
 from app.core.security import create_access_token, create_refresh_token, verify_token_data
@@ -89,7 +88,7 @@ class AuthService:
             user=UserSchema.model_validate(user)
         )
 
-    async def login_with_google(self, token: str, user_agent: str = None) -> tuple[Token, User]:
+    async def login_with_google(self, token: str, user_agent: str = None) -> Token:
         google_data = await self.verify_google_token(token)
         user = await self.get_or_create_user(google_data)
         token_data = await self.create_user_session(user, user_agent)

@@ -13,7 +13,7 @@ interface Message {
 }
 
 const ChatPage: React.FC = () => {
-    const { user, refreshToken, logout } = useAuthStore();
+    const { user, logout } = useAuthStore();
     const navigate = useNavigate();
 
     const [messages, setMessages] = useState<Message[]>([
@@ -38,9 +38,7 @@ const ChatPage: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            if (refreshToken) {
-                await authApi.logout(refreshToken);
-            }
+            await authApi.logout();
         } catch (error) {
             console.error("Logout error", error);
         } finally {
@@ -75,7 +73,6 @@ const ChatPage: React.FC = () => {
 
         try {
             // Use Fetch API for Stream support
-            const token = useAuthStore.getState().accessToken;
             // Get base URL from axios client config or hardcode it. 
             // Better to match axiosClient baseURL. 
             // Assuming default vite proxy or full url.
@@ -85,8 +82,8 @@ const ChatPage: React.FC = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
+                credentials: 'include', // Important for sending cookies
                 body: JSON.stringify({ message: question })
             });
 
