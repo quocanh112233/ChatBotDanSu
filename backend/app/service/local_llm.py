@@ -18,7 +18,12 @@ class LocalLLMService:
             "model": self.model,
             "messages": messages,
             "stream": False,
-            "options": {"temperature": 0.3, "top_p": 0.9}
+            "options": {
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "repeat_penalty": 1.2,
+                "num_predict": 512
+            }
         }
         async with httpx.AsyncClient(timeout=120.0) as client:
             try:
@@ -38,7 +43,12 @@ class LocalLLMService:
             "model": self.model,
             "messages": messages,
             "stream": True, # ENABLE STREAM
-            "options": {"temperature": 0.3, "top_p": 0.9}
+            "options": {
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "repeat_penalty": 1.2,
+                "num_predict": 512
+            }
         }
 
         async with httpx.AsyncClient(timeout=120.0) as client:
